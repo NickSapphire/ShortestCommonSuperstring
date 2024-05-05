@@ -12,9 +12,10 @@ force solution.
 
 ## How to use
 
-The ```shortest_common_superstring.py``` script contains all the functions
+The shortest_common_superstring script contains all the functions which are imported into
+the main script is used for testing with user input or randomly generated sequences.
 
-Once it's run, the program will interactively prompt the user for the following input, respectively:
+Once it's run, the program will prompt the user for the following input, respectively:
 - ```seq```: The original sequence the program will partition into overlapping k-mers and try to
 reconstruct. If it is left blank, it will ask for an additional argument ```size``` and create
 a randomly generated sequence of that length.
@@ -22,7 +23,7 @@ a randomly generated sequence of that length.
 - ```threshold```: Minimum suffix-prefix overlap length required for a pair of substrings to
 get added to the overlap matrix.
 
-Parameter restriction: ```len(seq)``` > ```k``` ≥ ```threshold```
+Parameter restrictions: ```len(seq)``` > ```k``` ≥ ```threshold```
 
 Afterwards, it will output the greedy solution to the shortest common superstring problem for the
 generated k-mers, since the function picks randomly from the substring pairs with maximum length
