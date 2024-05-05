@@ -5,6 +5,10 @@ and brute force approaches.
 
 ## Library dependencies
 
+- random: https://docs.python.org/3/library/random.html
+
+- itertools: https://docs.python.org/3/library/itertools.html
+
 This program uses the random module to generate random sequences with an even
 distribution and to decide which substring pair to merge in the greedy function
 and itertools to iterate over every permutation of the k-mer array in the brute
@@ -23,7 +27,7 @@ a randomly generated sequence of that length.
 - ```threshold```: Minimum suffix-prefix overlap length required for a pair of substrings to
 get added to the overlap matrix.
 
-Parameter restrictions: ```len(seq)``` > ```k``` ≥ ```threshold```
+Parameter restrictions: ```len(seq)``` > ```k``` >= ```threshold```
 
 Afterwards, it will output the greedy solution to the shortest common superstring problem for the
 generated k-mers, since the function picks randomly from the substring pairs with maximum length
