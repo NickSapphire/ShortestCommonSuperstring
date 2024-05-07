@@ -14,7 +14,7 @@ def overlap(S: str, P: str) -> int:
 
 def generate_genome(length: int) -> str:
     """
-    Generates n string of a given length with evenly distributed random nucleotides.
+    Generates a string of a given length with evenly distributed random nucleotides.
     """
     if length < 0:
         raise ValueError("length must be a positive integer")
@@ -26,18 +26,16 @@ def get_substrings(seq: str, k: int) -> list:
     """
     Returns the list of overlapping k-mers from the string seq.
     """
-    L = []
+    kmers = []
     for i in range(len(seq) - k + 1):
-        L.append(seq[i:i+k])
-    return L
+        kmers.append(seq[i:i+k])
+    return kmers
 
 
 def create_overlap_matrix(seq: str, k: int, threshold: int) -> tuple:
     """
-    The overlap matrix is a dictionary which has tuples of k-mer IDs as keys and
-    inner dictionaries containing the size of the overlaps of the outer key (as suffix)
-    and the inner keys (as prefixes) as values.
-    None of the inner dictionaries contain overlaps of any given substring with itself.
+    Given a sequence and the size of the k-mers initializes the overlap matrix.
+    Explained further in the README file.
     :param seq: Input sequence
     :param k: Size of the overlapping substrings
     :param threshold: Minimum overlap length required to get added to the overlap matrix
@@ -45,7 +43,7 @@ def create_overlap_matrix(seq: str, k: int, threshold: int) -> tuple:
     """
     size = len(seq) - k + 1
     IDs = [(i,) for i in range(size)]  # Store k-mer IDs as tuples for merging
-    matrix = {ID:{} for ID in IDs}     # Each inner dict stores overlaps with the outer key as the suffix
+    matrix = {ID:{} for ID in IDs}     # Each inner dict stores overlaps with ID as the suffix
 
     kmers = get_substrings(seq, k)
     substrings = {(i,):kmers[i] for i in range(size)}  # Keys: IDs from matrix,
@@ -54,9 +52,8 @@ def create_overlap_matrix(seq: str, k: int, threshold: int) -> tuple:
         for p in range(len(kmers)):  # Prefix IDs
             if s != p:  # Exclude alignments of a k-mer with itself
                 overlap_length = overlap(kmers[s], kmers[p])
-                if overlap_length >= threshold:
+                if overlap_length >= threshold:  # Exclude overlaps smaller than threshold
                     matrix[(s,)][(p,)] = overlap_length
-
     return (matrix, substrings)
 
 
@@ -80,17 +77,15 @@ def merge(matrix: dict, substrings: dict, suf_id: tuple, pre_id: tuple):
     del matrix[suf_id]
     del matrix[pre_id]
     for dic in matrix.values():
-        if suf_id in dic:
-            del dic[suf_id]
-        if pre_id in dic:
-            del dic[pre_id]
+        dic.pop(suf_id, None)  # Will be ignored if the key is not found
+        dic.pop(pre_id, None)
 
     # Add the new substring ID to substrings and matrix, and compute the overlap lengths
     merged_ID = suf_id + pre_id
     substrings[merged_ID] = merged_string
 
     new_row = dict()
-    for id, dic in matrix.copy().items():
+    for id, dic in matrix.copy().items():  # doesn't let you modify a dict in a loop
         matrix[id][merged_ID] = overlap(substrings[id], merged_string)  # merged_string as prefix
         new_row[id] = overlap(merged_string, substrings[id]) # merged_string as suffix
     matrix[merged_ID] = new_row
@@ -99,10 +94,9 @@ def merge(matrix: dict, substrings: dict, suf_id: tuple, pre_id: tuple):
 def find_SCS_greedy(matrix: dict, substrings: dict) -> str:
     """
     Finds the shortest common superstring from an array of overlapping k-mers
-    by recursively merging the two substrings with the highest overlap size
+    by recursively merging the two substrings with the highest overlap length
     until it gets to one substring. In case more than one pair has the largest
-    overlap, it picks a random pair among them, so it may return a different
-    answer each time it's called.
+    overlap, it picks a random pair among them.
     """
     if len(substrings) == 1:
         return [*substrings.values()][0]
@@ -124,7 +118,7 @@ def find_SCS_bf(seq: str, k: int) -> str:
     a common superstring with the smallest possible length.
     """
     substrings = get_substrings(seq, k)
-    min_length = float("inf")
+    min_length = float("inf")  # initialized with infinity since it's a minimization problem
 
     for perm in itertools.permutations(substrings):
         merged_string = ""
@@ -134,5 +128,4 @@ def find_SCS_bf(seq: str, k: int) -> str:
         if len(merged_string) < min_length:
             scs = merged_string
             min_length = len(merged_string)
-
     return scs
