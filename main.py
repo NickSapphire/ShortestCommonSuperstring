@@ -22,6 +22,7 @@ if __name__ == "__main__":
     do_bf = input("\nTest brute force approach? (WARNING: Very long computation "
                   "time for long sequences) [y/n]: ").lower()
     if do_bf == "y":
-        bf = find_SCS_bf(seq, k)
+        kmers = get_substrings(seq, k)
+        bf = find_SCS_bf(kmers)
         print("Brute force approach:")
         print(f"{bf}\nLength: {len(bf)}")

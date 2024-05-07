@@ -112,19 +112,18 @@ def find_SCS_greedy(matrix: dict, substrings: dict) -> str:
     return find_SCS_greedy(matrix, substrings)
 
 
-def find_SCS_bf(seq: str, k: int) -> str:
+def find_SCS_bf(kmers: list) -> str:
     """
-    Iterates over all possible permutations of a given string's k-mers and finds
-    a common superstring with the smallest possible length.
+    Iterates over all possible permutations of given k-mers and finds a common
+    superstring with the smallest possible length.
     """
-    substrings = get_substrings(seq, k)
     min_length = float("inf")  # initialized with infinity since it's a minimization problem
 
-    for perm in itertools.permutations(substrings):
+    for perm in itertools.permutations(kmers):
         merged_string = ""
-        for substring in perm:
-            overlap_size = overlap(merged_string, substring)
-            merged_string += substring[overlap_size:]
+        for kmer in perm:
+            overlap_size = overlap(merged_string, kmer)
+            merged_string += kmer[overlap_size:]
         if len(merged_string) < min_length:
             scs = merged_string
             min_length = len(merged_string)
